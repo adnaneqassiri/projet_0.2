@@ -1,5 +1,5 @@
-import { createContext, useState } from "react";
-import { products } from "./products";
+import { createContext, useEffect, useState } from "react";
+import axios from "axios";
 export const CartContext = createContext({
   items: [],
   getProductQuantity: () => {},
@@ -7,11 +7,27 @@ export const CartContext = createContext({
   removeOneFromCart: () => {},
   deleteFromCart: () => {},
   getTotalCost: () => {},
+  clearCart: () => {},
 });
 
 export const CartProvider = ({ children }) => {
   // [{id:1,quantity:2}, {id:3,quantity:4}]
+  const [products, setProducts] = useState([]);
   const [cartProducts, setCartProducts] = useState([]);
+  useEffect(() => {
+    // Define an async function inside the useEffect
+    const fetchProducts = async () => {
+      try {
+        const response = await axios.get("http://localhost:3000/products");
+        setProducts(response.data);
+      } catch (error) {
+        console.log("Error fetching products:", error);
+      }
+    };
+
+    // Call the async function
+    fetchProducts();
+  }, []);
 
   const getProductQuantity = (id) => {
     const quantity = cartProducts.find((el) => el.id === id)?.quantity;
@@ -19,6 +35,9 @@ export const CartProvider = ({ children }) => {
       return 0;
     }
     return quantity;
+  };
+  const clearCart = () => {
+    setCartProducts([]);
   };
 
   const addOneToCart = (id, quantity) => {
@@ -68,7 +87,9 @@ export const CartProvider = ({ children }) => {
     removeOneFromCart,
     deleteFromCart,
     getTotalCost,
+    clearCart,
   };
+
   return (
     <CartContext.Provider value={contextValue}>{children}</CartContext.Provider>
   );

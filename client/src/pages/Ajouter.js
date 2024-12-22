@@ -1,35 +1,61 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import axios from "axios";
-import { useParams } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
+import UploadImage from "../components/UploadImage";
 
 export default function Ajouter() {
   const navigate = useNavigate();
-  const { id } = useParams();
   const [formData, setFormData] = useState({
     NomProduit: "",
-    Prix: "",
-    Stock: "",
+    Prix: 0,
+    Stock: 0,
     Description: "",
-    Categorie: "electronics",
+    Image: "",
+    ID_Categorie: 1,
   });
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
   };
+  const handleImage = (image) => {
+    setFormData({ ...formData, ["Image"]: image });
+  };
   const handleAjouter = (e) => {
     e.preventDefault();
+
+    const data = new FormData();
+    data.append("NomProduit", formData.NomProduit);
+    data.append("Prix", formData.Prix);
+    data.append("Stock", formData.Stock);
+    data.append("Description", formData.Description);
+    if (formData.ID_Categorie == "classique") {
+      data.append("ID_Categorie", 1);
+    } else if (formData.ID_Categorie == "casual") {
+      data.append("ID_Categorie", 2);
+    } else {
+      data.append("ID_Categorie", 3);
+    }
+
+    if (formData.Image) {
+      data.append("image", formData.Image); // "image" matches multer fieldname
+    }
+
     axios
-      .post(`/products`, formData)
+      .post(`http://localhost:3000/products`, data, {
+        headers: { "Content-Type": "multipart/form-data" },
+      })
       .then((res) => {
-        console.log(res.data);
-        navigate("/myProducts");
-        alert("product added");
+        console.log(data);
+        navigate("/myProducts", { replace: true });
+        alert("Product added successfully");
       })
       .catch((err) => {
-        alert("product not added");
+        console.log([formData]);
+        console.error("Error adding product:", err);
+        alert("Failed to add product");
       });
   };
+
   return (
     <div className="ajouter-produit">
       <div className="container">
@@ -43,10 +69,11 @@ export default function Ajouter() {
                 name="NomProduit"
                 value={formData.NomProduit}
                 onChange={handleChange}
+                maxLength={50}
                 required
               />
             </div>
-            <div>
+            <div className="three-ints">
               <input
                 type="number"
                 placeholder="Prix"
@@ -55,8 +82,6 @@ export default function Ajouter() {
                 onChange={handleChange}
                 required
               />
-            </div>
-            <div>
               <input
                 type="number"
                 name="Stock"
@@ -78,21 +103,17 @@ export default function Ajouter() {
             <div>
               <label>Catégorie:</label>
               <select
-                name="Categorie"
-                value={formData.Categorie}
+                name="ID_Categorie"
+                value={formData.ID_Categorie}
                 onChange={handleChange}
                 required
               >
-                <option value="electronics">Electronics</option>
-                <option value="clothing">Clothing</option>
-                <option value="furniture">Furniture</option>
-                <option value="beauty">Beauty</option>
-                <option value="sports">Sports</option>
+                <option value="classique">Classique</option>
+                <option value="casual">Casual</option>
+                <option value="sport">Sport</option>
               </select>
             </div>
-            <div>
-              <input type="file" accept="image/*" id="imageInput"></input>
-            </div>
+            <UploadImage onImageSelect={handleImage} />
             <div className="buttons">
               <button onClick={(e) => handleAjouter(e)} type="submit">
                 Ajouter

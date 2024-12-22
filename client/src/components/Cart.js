@@ -1,20 +1,29 @@
 import { Modal } from "react-bootstrap";
-import { useContext } from "react";
+import { useContext, useEffect, useState } from "react";
 import { CartContext } from "../CartContext";
-import { products } from "../products";
 import { Link } from "react-router-dom";
+import axios from "axios";
 
 export default function Cart({ show, handleClose }) {
   let cart = useContext(CartContext);
-
+  const [products, setProducts] = useState([]);
+  useEffect(() => {
+    axios
+      .get("http://localhost:3000/products")
+      .then((response) => {
+        setProducts(response.data);
+      })
+      .catch((error) => console.log("Error fetching products:", error));
+  }, []);
   function getTotalCost() {
     let totalCost = 0;
     cart.items.forEach((el) => {
       const productData = products.find((e) => {
-        return e.id === +el.id;
+        return e.ID_Produit === +el.id;
       });
-      totalCost += productData.price * el.quantity;
-      console.log(productData.price, el.quantity);
+      console.log(productData);
+      totalCost += productData.Prix * el.quantity;
+      console.log(productData.Prix, el.quantity);
     });
 
     return totalCost;
@@ -30,15 +39,20 @@ export default function Cart({ show, handleClose }) {
           {cart.items.length !== 0 ? (
             <div className="cart-items">
               {cart.items.map((e) => {
-                let product = products.find((el) => el.id === +e.id);
+                console.log(cart.items);
+                console.log(products);
+                let product = products.find(
+                  (el) => +el.ID_Produit === parseInt(e.id)
+                );
+                console.log(product);
                 return (
                   <div className="cart-item">
                     <div className="right">
                       <div className="section-1">
-                        <img src={product.image} alt="" />
+                        <img src={product.Image} alt="" />
                       </div>
                       <div className="section-2">
-                        <h2>{product.title}</h2>
+                        <h2>{product.NomProduit}</h2>
                         <div className="counter">
                           <span
                             onClick={() => {
@@ -57,9 +71,11 @@ export default function Cart({ show, handleClose }) {
                           </span>
                         </div>
                         <div className="remove-price">
-                          <p className="price">Unit : ${product.price}</p>
+                          <p className="price">
+                            Unit : MAD {parseInt(product.Prix).toFixed(0)}
+                          </p>
                           <div className="left price">
-                            Total : ${(product.price * e.quantity).toFixed(2)}
+                            Total : MAD {(product.Prix * e.quantity).toFixed(0)}
                           </div>
                           <button onClick={() => cart.deleteFromCart(e.id)}>
                             Remove
@@ -77,7 +93,8 @@ export default function Cart({ show, handleClose }) {
 
           <div className="checkOut">
             <h3>
-              Total :<span className="price">${getTotalCost().toFixed(2)}</span>
+              TOTAL :
+              <span className="price">MAD {getTotalCost().toFixed(2)}</span>
             </h3>
             {cart.items.length !== 0 ? (
               <Link to="/purchase" onClick={handleClose}>

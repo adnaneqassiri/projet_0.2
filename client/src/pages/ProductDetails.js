@@ -35,33 +35,39 @@ export default function ProductDetails() {
         </Link>
         <div className="product">
           <div className="section-1">
-            {/* <img src={product.image} alt="" /> */}
+            <img src={produit.Image} alt="" />
           </div>
           <div className="section-2">
-            <div className="sous-sec1">
-              <h2>{produit.NomProduit}</h2>
-              <h3>{produit.Prix} DH</h3>
-              <h4>
-                <span>Category : </span>
-                {produit.Categorie}
-              </h4>
-              <p>{produit.Description}</p>
+            <h2>{produit.NomProduit}</h2>
+            <h3>{produit.Prix} MAD</h3>
+            <h4>
+              <span>Category : </span>
+              {produit.ID_Categorie === 1
+                ? "Classique"
+                : produit.ID_Categorie === 2
+                ? "Occasionnelle"
+                : "Sport"}
+            </h4>
+            <h4>
+              <span>Stock : </span>
+              {produit.Stock}
+            </h4>
+            <p>{produit.Description}</p>
+
+            <div className="counter">
+              <span onClick={handleAddition}>+</span>
+              <p>{quantity}</p>
+              <span onClick={handleSubtraction}>-</span>
             </div>
-            <div className="sous-sec2">
-              <div className="counter">
-                <span onClick={handleAddition}>+</span>
-                <p>{quantity}</p>
-                <span onClick={handleSubtraction}>-</span>
-              </div>
-              <button
-                onClick={() => {
-                  cart.addOneToCart(id, quantity);
-                  console.log(cart.items);
-                }}
-              >
-                Add to cart
-              </button>
-            </div>
+            <button
+              onClick={() => {
+                cart.addOneToCart(id, quantity);
+                console.log(cart.items);
+                alert("Ajouté au panier");
+              }}
+            >
+              Ajouter au panier
+            </button>
           </div>
         </div>
       </div>

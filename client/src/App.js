@@ -6,11 +6,17 @@ import Purchase from "./pages/Purchase";
 import ProductDetails from "./pages/ProductDetails";
 import NotFound from "./pages/NotFound";
 import { CartProvider } from "./CartContext";
-import { Contact } from "./pages/Contact";
+import { UserProvider } from "./UserContext";
+import Contact from "./pages/Contact";
 import About from "./pages/About";
 import MyProducts from "./pages/MyProducts";
 import ModifierProduit from "./pages/ModifierProduit";
 import Ajouter from "./pages/Ajouter";
+import ValidatePanier from "./pages/ValidatePanier";
+import Les_commandes from "./pages/Les_commandes";
+import Login from "./pages/Login";
+import SignUp from "./pages/SignUp";
+import User from "./pages/User";
 export default function App() {
   let router = createBrowserRouter([
     {
@@ -25,6 +31,10 @@ export default function App() {
           element: <Products />,
         },
         {
+          path: "/user",
+          element: <User />,
+        },
+        {
           path: "/products/:id",
           element: <ProductDetails />,
         },
@@ -35,6 +45,18 @@ export default function App() {
         {
           path: "contact",
           element: <Contact />,
+        },
+        {
+          path: "signin",
+          element: <Login />,
+        },
+        {
+          path: "signup",
+          element: <SignUp />,
+        },
+        {
+          path: "les_commandes",
+          element: <Les_commandes />,
         },
         {
           path: "about",
@@ -53,6 +75,10 @@ export default function App() {
           element: <ModifierProduit />,
         },
         {
+          path: "validateOrder",
+          element: <ValidatePanier />,
+        },
+        {
           path: "*",
           element: <NotFound />,
         },
@@ -61,9 +87,11 @@ export default function App() {
   ]);
   return (
     <>
-      <CartProvider>
-        <RouterProvider router={router} />
-      </CartProvider>
+      <UserProvider>
+        <CartProvider>
+          <RouterProvider router={router} />
+        </CartProvider>
+      </UserProvider>
     </>
   );
 }
