@@ -71,7 +71,7 @@ Ce projet est une application web qui affiche une liste de produits. Les utilisa
 
 ## Auteurs
 
-- Qassiri Adnane - [Votre Profil GitHub](https://github.com/adnaneqassiri)
+- Qassiri Adnane - [adnaneqassiri](https://github.com/adnaneqassiri)
 
 ## Licence
 
